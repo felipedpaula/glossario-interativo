@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glossário Interativo</title>
+</head>
+<body>
+    <div class="center">
+        <h1>Glossário Interativo</h1>
+        <p>Passe o mouse em cima das palavras <strong>sujeito</strong> e <strong>predicado</strong> grifadas de laranja. Uma caixa de diálogo interativa irá trazer o significado do termo. Também é possível adicionar o link normalmente no termo, como foi feito em 'sujeito'.</p>
+
+        <div class="texto">
+            <p>O sujeito e o predicado são dois termos essenciais da oração. O <a href="https://brasilescola.uol.com.br/o-que-e/portugues/o-que-e-predicado.htm">{{sujeito}} [[O sujeito da oração é aquele que realiza ou sofre a ação expressa pelo verbo. O sujeito pode ser simples, composto, oculto ou indeterminado. Há, ainda, orações sem sujeito.]]</a> é o elemento que executa e/ou sofre a ação do verbo no enunciado. Já o {{predicado}} [[O predicado é um termo essencial da oração. Ele pode ser verbal, nominal ou verbo-nominal. Para identificar o predicado, é necessário excluir o sujeito da oração.]] corresponde ao próprio enunciado feito, composto de verbo, objeto e complementos. Quando a oração apresenta sujeito, o predicado está relacionado a ele.</p>
+        </div>
+
+    <script>
+        function processarTexto() {
+
+            // Seleciona o texto referência
+            const textoContainer = document.querySelector('.texto');
+            let texto = textoContainer.innerHTML;
+
+            // Regex para capturar as ocorrências {{termo}} [[significado]]
+            const regex = /{{(.*?)}} \[\[(.*?)\]\]/g;
+            let match;
+
+            
+            while ((match = regex.exec(texto)) !== null) {
+                const termo = match[1];
+                const significado = match[2];
+
+                // Criando elementos HTML para termo e significado
+                const termoElement = `<em class="termo" data-significado="${significado}">${termo}</em>`;
+                
+                // Substituindo no texto original
+                texto = texto.replace(match[0], termoElement);
+            }
+
+            // Atualizando o conteúdo da div
+            textoContainer.innerHTML = texto;
+
+            // Adicionando evento de mouseover para mostrar o significado
+            document.querySelectorAll('.termo').forEach(el => {
+                el.addEventListener('mouseover', function() {
+                    const significado = this.getAttribute('data-significado');
+                    const dialog = document.createElement('dialog');
+                    dialog.classList.add('significado');
+                    dialog.innerHTML = significado;
+                    document.body.appendChild(dialog);
+                    setTimeout(() => {
+                        dialog.style.display = 'block';
+                        dialog.style.top = `${this.getBoundingClientRect().bottom + window.scrollY}px`;
+                        dialog.style.left = `${this.getBoundingClientRect().left - 200}px`;
+                    }, 700);
+                });
+
+                el.addEventListener('mouseout', function() {
+                    document.querySelectorAll('.significado').forEach(dialog => dialog.remove());
+                });
+            });
+        }
+
+        // Chamando a função ao carregar a página
+        window.onload = processarTexto;
+    </script>
+
+    <style> 
+        body {
+            background-color: #cecece;
+        }
+        .center {
+            max-width: 620px;
+            margin: auto;
+        }
+        .texto {
+            padding: 12px;
+            background-color: #FFF;
+            border: 1px solid #cecece;
+        }
+        dialog {
+            max-width: 300px;
+            border: 0;
+            box-shadow: #1f1e2033 0px 20px 25px;
+            border-radius: 6px;
+        }
+        em {
+            cursor: pointer;
+            color: #f60;
+            font-weight: 600;
+        }
+    </style>
+</body>
+</html>
